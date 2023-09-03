@@ -1,0 +1,27 @@
+metadata:
+    language: v1-beta
+    name: "Header: Server detection"
+    description: "Identify the server/proxy running on the application via 'Server' header"
+    tags: "passive","header","wstg"
+    author: "cosasdepuma"
+
+define:
+    summary = "While exposed server information is not necessarily in itself a vulnerability, it is information that can assist attackers in exploiting other vulnerabilities that may exist. Exposed server information can also lead attackers to find version-specific server vulnerabilities that can be used to exploit unpatched servers."
+
+given response then
+    if {latest.response.headers} matches "([xX][_-]|)[sS]erver:[^\n]+" then
+        # -- | Server and version
+        if {latest.response.headers} matches "([xX][_-]|)[sS]erver:\s+[^/]+/[0-9]+" then
+            report issue:
+                severity: low
+                confidence: certain
+                detail: `The service used by the application, as well as its version, has been detected through the "Server" header. {summary}`
+
+        # -- | Server
+        else then
+            report issue:
+                severity: info
+                confidence: certain
+                detail: `The service used by the application has been detected through the "Server" header. {summary}`
+        end if
+    end if

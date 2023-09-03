@@ -1,0 +1,22 @@
+metadata:
+    language: v1-beta
+    name: "Metafile: sitemap.xml"
+    description: "Check for the sitemap.xml metafile"
+    tags: "active","metafiles","wstg"
+    author: "cosasdepuma"
+
+define:
+    summary = "A sitemap is a file where a developer or organization can provide information about the pages, videos, and other files offered by the site or application, and the relationship between them. Search engines can use this file to more intelligently explore your site. Testers can use sitemap.xml files to learn more about the site or application to explore it more completely."
+
+given host then
+    send request called check:
+        method: "GET"
+        path: "/sitemap.xml"
+
+    if ({check.response.status_code} is "200" or {check.response.status_code} is "304") and {check.response.headers} matches "[cC]ontent[_-][tT]ype: (application|text)/xml" then
+        # -- | Sitemap
+        report issue:
+            severity: info
+            confidence: certain
+            detail: `Sitemap.xml file found. {summary}`
+    end if

@@ -1,0 +1,31 @@
+metadata:
+    language: v1-beta
+    name: "Metafile: robots.txt"
+    description: "Check for the robots.txt metafile"
+    tags: "active","metafiles","wstg"
+    author: "cosasdepuma"
+
+define:
+    summary = "Web Spiders, Robots or Crawlers retrieve a web page and then recursively traverse hyperlinks to retrieve further web content. Their accepted behavior is specified by the Robots Exclusion Protocol of the robots.txt file in the web root directory."
+
+given host then
+    send request called check:
+        method: "GET"
+        path: "/robots.txt"
+
+    if ({check.response.status_code} is "200" or {check.response.status_code} is "304") and {check.response.body} matches "[uU]ser-[aA]gent:" then
+        # -- | Disallowed robots
+        if {check.response.body} matches "[dD]isallow:\s+[^\n]" then
+            report issue:
+                severity: info
+                confidence: certain
+                detail: `Robots.txt file with disallow directives has been found. {summary}`
+
+        # -- | Allowed robots
+        else then
+            report issue:
+                severity: info
+                confidence: certain
+                detail: `Robots.txt file found. {summary}`
+        end if
+    end if
