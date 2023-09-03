@@ -12,6 +12,7 @@ given host then
     send request called check:
         method: "GET"
         path: "/sitemap.xml"
+        replacing headers: "X-BCheck": "metafiles_sitemap"
 
     if ({check.response.status_code} is "200" or {check.response.status_code} is "304") and {check.response.headers} matches "[cC]ontent[_-][tT]ype: (application|text)/xml" then
         # -- | Sitemap

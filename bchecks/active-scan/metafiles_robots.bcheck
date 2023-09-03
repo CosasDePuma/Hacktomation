@@ -12,6 +12,7 @@ given host then
     send request called check:
         method: "GET"
         path: "/robots.txt"
+        replacing headers: "X-BCheck": "metafiles_robots"
 
     if ({check.response.status_code} is "200" or {check.response.status_code} is "304") and {check.response.body} matches "[uU]ser-[aA]gent:" then
         # -- | Disallowed robots
